@@ -33,3 +33,6 @@ creditcard.csv
 .idea/
 *.swp
 *.swo
+
+# Local prediction history
+backend/prediction_history.json
