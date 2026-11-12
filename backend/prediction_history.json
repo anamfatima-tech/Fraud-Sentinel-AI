@@ -1,0 +1,61 @@
+[
+  {
+    "prediction": "Legit",
+    "confidence": 0.84,
+    "risk_level": "LOW",
+    "fraud_probability": 0.16,
+    "legit_probability": 0.84,
+    "timestamp": "2026-11-12T22:43:19.071383",
+    "amount": 450000.0
+  },
+  {
+    "prediction": "Legit",
+    "confidence": 0.9,
+    "risk_level": "LOW",
+    "fraud_probability": 0.1,
+    "legit_probability": 0.9,
+    "threshold_applied": 0.5,
+    "timestamp": "2026-11-12T22:51:12.053389",
+    "amount": 0.0,
+    "risk_factors": [
+      {
+        "feature": "V14",
+        "name": "Known Fraud Ring Sub-cluster",
+        "value": "-4.289",
+        "severity": 98,
+        "impact": "Critical",
+        "reason": "Significant statistical departure (4.29\u03c3) from normal cardholder baseline."
+      },
+      {
+        "feature": "V4",
+        "name": "Transaction Velocity Variance",
+        "value": "3.998",
+        "severity": 98,
+        "impact": "Critical",
+        "reason": "Significant statistical departure (4.00\u03c3) from normal cardholder baseline."
+      },
+      {
+        "feature": "V11",
+        "name": "Rapid Succession Attempt",
+        "value": "3.202",
+        "severity": 82,
+        "impact": "Critical",
+        "reason": "Significant statistical departure (3.20\u03c3) from normal cardholder baseline."
+      },
+      {
+        "feature": "V12",
+        "name": "Card-Not-Present Token Check",
+        "value": "-2.900",
+        "severity": 75,
+        "impact": "High",
+        "reason": "Significant statistical departure (2.90\u03c3) from normal cardholder baseline."
+      }
+    ],
+    "recommendation": {
+      "action": "AUTO_APPROVE",
+      "title": "\u2705 Approved: Instant Settlement",
+      "description": "All behavioral and biometric indices within safe tolerances. Safe for frictionless processing.",
+      "color": "var(--legit-green)"
+    }
+  }
+]

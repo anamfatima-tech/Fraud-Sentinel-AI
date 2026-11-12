@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡️ Enterprise Fraud Sentinel - Real-Time AI Detection</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+</head>
+<body>
+
+    <!-- ===== Header ===== -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>🛡️ FraudSentinel AI</h1>
+                <span class="header-badge">Enterprise Edition</span>
+            </div>
+            <nav class="nav-links">
+                <button id="soundToggleBtn" class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;" onclick="toggleAudioAlerts()">
+                    🔊 Sound: ON
+                </button>
+                <a href="/" class="active">🔍 Detection Suite</a>
+                <a href="/dashboard">📊 Analytics & SOC</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ===== Main Container ===== -->
+    <main class="container">
+
+        <!-- Mode Switcher Tabs -->
+        <div class="mode-tabs">
+            <button class="tab-btn active" id="tabSingle" onclick="switchView('single')">
+                <span>📝 Single Transaction</span>
+            </button>
+            <button class="tab-btn" id="tabBatch" onclick="switchView('batch')">
+                <span>📁 Bulk CSV Scanner</span>
+            </button>
+            <button class="tab-btn" id="tabStream" onclick="switchView('stream')">
+                <span>⚡ Live Radar Stream</span>
+            </button>
+        </div>
+
+        <!-- Global Error Notification -->
+        <div id="errorMessage" class="error-message">
+            <div class="error-title" id="errTitle">System Error</div>
+            <div class="error-details" id="errDetails">An error occurred during evaluation.</div>
+        </div>
+
+        <!-- ==================== VIEW 1: SINGLE PREDICTION ==================== -->
+        <div id="viewSingle" class="prediction-grid">
+
+            <!-- LEFT: Transaction Input Form -->
+            <div class="glass-card">
+                <div class="card-title">
+                    <span>📝 Transaction Parameters</span>
+                    <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 500;">30 Features (PCA Encoded)</span>
+                </div>
+
+                <!-- Sensitivity Threshold Controller -->
+                <div class="threshold-bar">
+                    <div class="threshold-info">
+                        <span class="lbl">Sensitivity Threshold</span>
+                        <span class="desc">Lowering catches more fraud; raising reduces false alarms</span>
+                    </div>
+                    <div class="threshold-control">
+                        <input type="range" id="thresholdSlider" class="threshold-slider" min="10" max="90" value="50" oninput="updateThresholdDisplay(this.value)">
+                        <span id="thresholdVal" class="threshold-val">50%</span>
+                    </div>
+                </div>
+
+                <!-- Quick Action Buttons -->
+                <div class="button-group">
+                    <button type="button" class="btn btn-danger" onclick="loadSampleFraud()">
+                        🔴 Load Sample Fraud
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="loadSampleLegit()">
+                        🟢 Load Sample Legit
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">
+                        🧹 Clear Fields
+                    </button>
+                </div>
+
+                <form id="predictionForm" class="mt-2">
+
+                    <!-- Primary Features: Time & Amount -->
+                    <div class="primary-inputs">
+                        <div class="form-group">
+                            <label for="input_Time">Transaction Time (seconds)</label>
+                            <input type="number" id="input_Time" step="any" placeholder="e.g. 406" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="input_Amount">Transaction Amount ($ USD)</label>
+                            <input type="number" id="input_Amount" step="any" placeholder="e.g. 149.62" required>
+                        </div>
+                    </div>
+
+                    <!-- Collapsible PCA Groups -->
+                    <div class="collapsible">
+                        <div class="collapsible-header active">
+                            <span class="title">🔢 High-Impact Features (V1 - V7)</span>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content open">
+                            <div class="input-grid">
+                                <div class="form-group"><label for="input_V1">V1</label><input type="number" id="input_V1" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V2">V2</label><input type="number" id="input_V2" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V3">V3</label><input type="number" id="input_V3" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V4">V4</label><input type="number" id="input_V4" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V5">V5</label><input type="number" id="input_V5" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V6">V6</label><input type="number" id="input_V6" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V7">V7</label><input type="number" id="input_V7" step="any" placeholder="0.0" required></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="collapsible">
+                        <div class="collapsible-header">
+                            <span class="title">🔢 Core Authentication Signals (V8 - V14)</span>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="input-grid">
+                                <div class="form-group"><label for="input_V8">V8</label><input type="number" id="input_V8" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V9">V9</label><input type="number" id="input_V9" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V10">V10</label><input type="number" id="input_V10" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V11">V11</label><input type="number" id="input_V11" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V12">V12</label><input type="number" id="input_V12" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V13">V13</label><input type="number" id="input_V13" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V14">V14</label><input type="number" id="input_V14" step="any" placeholder="0.0" required></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="collapsible">
+                        <div class="collapsible-header">
+                            <span class="title">🔢 Behavioral & Network Components (V15 - V21)</span>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="input-grid">
+                                <div class="form-group"><label for="input_V15">V15</label><input type="number" id="input_V15" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V16">V16</label><input type="number" id="input_V16" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V17">V17</label><input type="number" id="input_V17" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V18">V18</label><input type="number" id="input_V18" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V19">V19</label><input type="number" id="input_V19" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V20">V20</label><input type="number" id="input_V20" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V21">V21</label><input type="number" id="input_V21" step="any" placeholder="0.0" required></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="collapsible">
+                        <div class="collapsible-header">
+                            <span class="title">🔢 Cryptographic & Secondary Verifications (V22 - V28)</span>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="input-grid">
+                                <div class="form-group"><label for="input_V22">V22</label><input type="number" id="input_V22" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V23">V23</label><input type="number" id="input_V23" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V24">V24</label><input type="number" id="input_V24" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V25">V25</label><input type="number" id="input_V25" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V26">V26</label><input type="number" id="input_V26" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V27">V27</label><input type="number" id="input_V27" step="any" placeholder="0.0" required></div>
+                                <div class="form-group"><label for="input_V28">V28</label><input type="number" id="input_V28" step="any" placeholder="0.0" required></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="predictBtn" class="btn btn-primary btn-full">
+                        <span id="btnText">🛡️ Evaluate Fraud Risk</span>
+                        <div id="loadingSpinner" class="spinner"></div>
+                    </button>
+                </form>
+            </div>
+
+            <!-- RIGHT: Real-time Evaluation & Explainability Result Panel -->
+            <div class="result-panel">
+                <div class="glass-card">
+                    <div class="card-title">
+                        <span>📋 Risk Intelligence Verdict</span>
+                        <button type="button" class="btn btn-secondary" style="padding: 0.25rem 0.6rem; font-size: 0.72rem;" onclick="printDossier()">🖨️ Print Report</button>
+                    </div>
+
+                    <!-- Placeholder -->
+                    <div id="resultPlaceholder" class="result-placeholder">
+                        <div class="icon">🔍</div>
+                        <p>Submit transaction telemetry to run real-time inference</p>
+                        <p style="font-size: 0.76rem; margin-top: 0.4rem; color: var(--text-muted);">
+                            Use the sample buttons above for quick demonstration.
+                        </p>
+                    </div>
+
+                    <!-- Actual Result Display -->
+                    <div id="resultDisplay" class="result-display">
+
+                        <!-- Main Verdict Badge -->
+                        <div id="predictionBadge" class="prediction-badge">
+                            <div class="badge-icon">🔮</div>
+                            <div class="badge-text">---</div>
+                        </div>
+
+                        <!-- Action Recommendation Alert Banner -->
+                        <div id="actionBanner" class="action-banner approve">
+                            <div class="action-header">
+                                <span id="actionTitle">✅ Approved: Instant Settlement</span>
+                            </div>
+                            <div class="action-desc" id="actionDesc">
+                                All telemetry is within normal operational bounds.
+                            </div>
+                        </div>
+
+                        <!-- Confidence Bar -->
+                        <div class="confidence-section">
+                            <div class="confidence-label">
+                                <span>Model Confidence</span>
+                                <span id="confidenceValue">0%</span>
+                            </div>
+                            <div class="confidence-bar">
+                                <div id="confidenceFill" class="confidence-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Probability Counters -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 1.2rem;">
+                            <div style="background: var(--fraud-red-light); border: 1px solid var(--fraud-red-border); padding: 0.6rem; border-radius: var(--radius-sm); text-align: center;">
+                                <div style="font-size: 0.68rem; color: var(--fraud-red); font-weight: 700; text-transform: uppercase;">Fraud Probability</div>
+                                <div id="fraudProb" style="font-size: 1.15rem; font-weight: 800; color: var(--fraud-red); font-family: 'JetBrains Mono', monospace;">0.0%</div>
+                            </div>
+                            <div style="background: var(--legit-green-light); border: 1px solid var(--legit-green-border); padding: 0.6rem; border-radius: var(--radius-sm); text-align: center;">
+                                <div style="font-size: 0.68rem; color: var(--legit-green); font-weight: 700; text-transform: uppercase;">Legit Probability</div>
+                                <div id="legitProb" style="font-size: 1.15rem; font-weight: 800; color: var(--legit-green); font-family: 'JetBrains Mono', monospace;">0.0%</div>
+                            </div>
+                        </div>
+
+                        <!-- Explainable AI (XAI) Breakdown -->
+                        <div class="xai-section">
+                            <div class="xai-title">
+                                <span>🧠 Top Risk Factor Contributors (XAI)</span>
+                            </div>
+                            <div id="riskFactorsList">
+                                <!-- Dynamic factors inserted via JS -->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==================== VIEW 2: BULK CSV SCANNER ==================== -->
+        <div id="viewBatch" class="hidden">
+            <div class="glass-card mb-2">
+                <div class="card-title">
+                    <span>📁 Bulk Transaction File Scanner</span>
+                    <a href="/sample_batch.csv" download class="btn btn-secondary" style="font-size: 0.78rem;">
+                        ⬇️ Download Sample Batch CSV
+                    </a>
+                </div>
+
+                <!-- Drag & Drop Zone -->
+                <div class="batch-upload-box" id="dropZone" onclick="document.getElementById('csvFileInput').click()">
+                    <div class="upload-icon">📄</div>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem;">Upload Transaction CSV</h3>
+                    <p style="font-size: 0.82rem; color: var(--text-muted);">
+                        Drag and drop your file here or click to browse (supports 30 columns format: Time, V1-V28, Amount)
+                    </p>
+                    <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="handleCsvUpload(event)">
+                </div>
+
+                <!-- Batch Progress and Summary Cards (Hidden initially) -->
+                <div id="batchSummarySection" class="hidden">
+                    <div class="batch-summary-grid">
+                        <div class="batch-stat-card">
+                            <div class="val" id="batchTotal">0</div>
+                            <div class="lbl">Total Scanned</div>
+                        </div>
+                        <div class="batch-stat-card">
+                            <div class="val" style="color: var(--fraud-red);" id="batchFraud">0</div>
+                            <div class="lbl">Flagged Fraud</div>
+                        </div>
+                        <div class="batch-stat-card">
+                            <div class="val" style="color: var(--legit-green);" id="batchLegit">0</div>
+                            <div class="lbl">Clean Transactions</div>
+                        </div>
+                        <div class="batch-stat-card">
+                            <div class="val" style="color: var(--warning-yellow);" id="batchFlaggedAmt">$0.00</div>
+                            <div class="lbl">High-Risk Exposure</div>
+                        </div>
+                    </div>
+
+                    <!-- Batch Results Table -->
+                    <div class="card-title mt-2">
+                        <span>Scored Transaction Manifest</span>
+                        <div style="display: flex; gap: 0.35rem;">
+                            <button type="button" class="btn btn-secondary" style="padding: 0.2rem 0.55rem; font-size: 0.72rem;" onclick="filterBatchResults('all')">All</button>
+                            <button type="button" class="btn btn-danger" style="padding: 0.2rem 0.55rem; font-size: 0.72rem;" onclick="filterBatchResults('fraud')">Fraud Only</button>
+                            <button type="button" class="btn btn-success" style="padding: 0.2rem 0.55rem; font-size: 0.72rem;" onclick="filterBatchResults('clean')">Clean Only</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="predictions-table">
+                            <thead>
+                                <tr>
+                                    <th># Row</th>
+                                    <th>Amount</th>
+                                    <th>Verdict</th>
+                                    <th>Fraud Prob.</th>
+                                    <th>Confidence</th>
+                                    <th>Risk Level</th>
+                                </tr>
+                            </thead>
+                            <tbody id="batchTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== VIEW 3: LIVE RADAR STREAM SIMULATOR ==================== -->
+        <div id="viewStream" class="hidden">
+            <div class="radar-panel">
+                <div class="radar-header">
+                    <div>
+                        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">⚡ Real-Time Transaction Ingestion Radar</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+                            Live continuous stream simulating incoming transactions through the fraud evaluation pipeline.
+                        </p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div class="radar-pulse-indicator" id="streamStatusIndicator">
+                            <div class="radar-pulse-dot"></div>
+                            <span>RADAR STANDBY</span>
+                        </div>
+                        <button id="toggleStreamBtn" class="btn btn-primary" onclick="toggleStreamSimulation()">
+                            ▶️ Start Live Radar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stream-ticker" id="streamTicker">
+                    <div style="padding: 2.5rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+                        Click <strong>Start Live Radar</strong> to begin stream simulation feed.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- JavaScript -->
+    <script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Security Operations Center (SOC) - Fraud Analytics</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+    <!-- ===== Header ===== -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>🛡️ FraudSentinel AI</h1>
+                <span class="header-badge">SOC & Analytics</span>
+            </div>
+            <nav class="nav-links">
+                <a href="/">🔍 Detection Suite</a>
+                <a href="/dashboard" class="active">📊 Analytics & SOC</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ===== Main Content ===== -->
+    <main class="container" id="dashboardContent">
+
+        <!-- Dashboard Header Actions -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+                <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-primary);">Security Operations Telemetry</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Real-time risk distribution, model feature importances, and historical audit ledger.</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <a href="/api/history/export" class="btn btn-secondary" style="font-size: 0.8rem;">
+                    📥 Export Audit CSV
+                </a>
+                <button class="btn btn-secondary" style="font-size: 0.8rem;" onclick="clearAuditHistory()">
+                    🗑️ Clear Logs
+                </button>
+                <button class="btn btn-primary" style="font-size: 0.8rem;" onclick="refreshDashboard()">
+                    🔄 Refresh Telemetry
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== Stats Cards Row ===== -->
+        <div class="stats-grid">
+            <div class="glass-card stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="data-content">
+                    <div id="totalPredictions" class="stat-value">0</div>
+                </div>
+                <div class="skeleton-loader skeleton skeleton-text" style="width: 60%; margin: 0 auto;"></div>
+                <div class="stat-label">Total Evaluated</div>
+            </div>
+
+            <div class="glass-card stat-card">
+                <div class="stat-icon">🚨</div>
+                <div class="data-content">
+                    <div id="fraudCount" class="stat-value" style="color: var(--fraud-red);">0</div>
+                </div>
+                <div class="skeleton-loader skeleton skeleton-text" style="width: 50%; margin: 0 auto;"></div>
+                <div class="stat-label">Fraud Incidents</div>
+            </div>
+
+            <div class="glass-card stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="data-content">
+                    <div id="fraudRate" class="stat-value">0%</div>
+                </div>
+                <div class="skeleton-loader skeleton skeleton-text" style="width: 45%; margin: 0 auto;"></div>
+                <div class="stat-label">Incident Ratio</div>
+            </div>
+
+            <div class="glass-card stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="data-content">
+                    <div id="modelAccuracy" class="stat-value">N/A</div>
+                    <div id="modelName" style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem; font-weight: 600;"></div>
+                </div>
+                <div class="skeleton-loader skeleton skeleton-text" style="width: 55%; margin: 0 auto;"></div>
+                <div class="stat-label">Active Engine</div>
+            </div>
+        </div>
+
+        <!-- ===== Visualizations Grid ===== -->
+        <div class="charts-grid">
+            <div class="glass-card chart-container">
+                <div class="card-title">
+                    <span>🍩 Class Distribution Ratio</span>
+                </div>
+                <div class="skeleton-loader skeleton skeleton-card"></div>
+                <div class="data-content">
+                    <div class="chart-wrapper">
+                        <canvas id="doughnutChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card chart-container">
+                <div class="card-title">
+                    <span>📈 Threat Event Timeline</span>
+                </div>
+                <div class="skeleton-loader skeleton skeleton-card"></div>
+                <div class="data-content">
+                    <div class="chart-wrapper">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card chart-container chart-full">
+                <div class="card-title">
+                    <span>🏆 Decision Weight Attribution (Top 10 Feature Importances)</span>
+                </div>
+                <div class="skeleton-loader skeleton skeleton-card"></div>
+                <div class="data-content">
+                    <div class="chart-wrapper" style="height: 350px;">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Recent Predictions Audit Table ===== -->
+        <div class="glass-card">
+            <div class="card-title">
+                <span>📜 Incident Audit Log (Recent Verifications)</span>
+                <span style="font-size: 0.72rem; color: var(--text-muted);">Synchronized in Real-Time</span>
+            </div>
+            <div class="skeleton-loader">
+                <div class="skeleton skeleton-text" style="width: 100%;"></div>
+                <div class="skeleton skeleton-text" style="width: 90%;"></div>
+                <div class="skeleton skeleton-text" style="width: 95%;"></div>
+            </div>
+            <div class="data-content">
+                <div class="table-container">
+                    <table class="predictions-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Verdict</th>
+                                <th>Confidence</th>
+                                <th>Risk Profile</th>
+                                <th>Transaction Amount</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <tr>
+                                <td colspan="6" class="text-center" style="padding: 2rem; color: var(--text-muted);">
+                                    Loading audit ledger...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- JavaScript -->
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>
