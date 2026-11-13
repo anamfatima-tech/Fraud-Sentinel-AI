@@ -178,4 +178,5 @@ Bankers aur fraud analysts ko sirf "Fraud" bolna kaafi nahi hota. Humne backend 
      - Top 10 feature importances horizontal bar chart.
    - One-click **Export Audit CSV** aur **Clear Logs** functionality.
 #   F r a u d - S e n t i n e l - A I  
+ #   C r e d i t - c a r d - f r a u d - d e t e c t i o n  
  
